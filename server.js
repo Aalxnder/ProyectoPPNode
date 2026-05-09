@@ -19,7 +19,7 @@ let PRODUCTOS = [
     { id: 2, nombre: "Rines Chevrolet", precio: 4500, stock: 8,  descripcion: "Medida 295/50/r15", imagen: "chevy.jpeg" },
     { id: 3, nombre: "Rines Dodge",     precio: 6000, stock: 5,  descripcion: "Medida 275/40/r20", imagen: "dodge.jpeg" },
 ];
-const USE_LOCKS = true;
+const USE_LOCKS = false;
 
 class Mutex {
     constructor() {
@@ -98,38 +98,6 @@ app.get('/buy/:id', async (req, res) => {
     // leer valores de usuario y producto
     const saldoLeido  = USUARIO.saldo;
     const stockLeido  = producto.stock;
-    if (USE_LOCKS) {
-        await compraSemaphore.acquire();
-        await compraMutex.acquire();
-        try {
-
-            await sleep(150);
-
-            if (USUARIO.saldo >= producto.precio && producto.stock > 0) {
-                await sleep(50);
-                USUARIO.saldo  -= producto.precio;
-                producto.stock -= 1;
-
-                res.render('buy.html', {
-                    mensaje: `[+] Compra realizada: ${producto.nombre} por $${producto.precio}`,
-                    producto,
-                    usuario: USUARIO
-                });
-                return;
-            }
-
-            res.render('buy.html', {
-                mensaje: `[!] Sin saldo suficiente o producto agotado`,
-                producto,
-                usuario: USUARIO
-            });
-            return;
-        } finally {
-            compraMutex.release();
-            compraSemaphore.release();
-        }
-    }
-
 
     if (USE_LOCKS) {
         await compraSemaphore.acquire();
@@ -150,19 +118,18 @@ app.get('/buy/:id', async (req, res) => {
             producto,
             usuario: USUARIO
         });
-        return;
     } else {
         res.render('buy.html', {
             mensaje: `[!] Sin saldo suficiente o producto agotado`,
             producto,
             usuario: USUARIO
         });
-        return;
     }
     if (USE_LOCKS) {
         compraMutex.release();
         compraSemaphore.release();
     }
+    return;
 });
 
 // Un race condition para añadir saldo(no lo vi como relevante y lo quite, pero aqui esta por si acaso) 
