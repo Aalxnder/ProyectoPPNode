@@ -64,5 +64,5 @@ Abre el navegador en [http://127.0.0.1:8000](http://127.0.0.1:8000) para ver la 
 Con el servidor corriendo, abre **otra terminal** y ejecuta:
  
 ```bash
-python3 raceCondition.py
+python3 raceConditionNode.py
 ```
