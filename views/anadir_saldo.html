@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Saldo actualizado{% endblock %}
+
+{% block content %}
+<div class="alert alert-info text-center">
+    <h2>{{ mensaje }}</h2>
+    <p>Saldo actual: ${{ usuario.saldo }}</p>
+</div>
+<a href="/saldo" class="btn btn-secondary">Volver</a>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Saldo - Tienda Concurrencia{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm text-center">
+    <div class="card-body">
+        <h2>💰 Tu saldo actual</h2>
+        <p class="fs-4">${{ usuario.saldo }}</p>
+        <hr>
+        <h4>Añadir saldo</h4>
+        <form method="POST" action="/anadir_saldo" class="mt-3">
+            <div class="mb-3">
+                <label for="cantidad" class="form-label">Cantidad a añadir</label>
+                <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+            </div>
+            <div class="mb-3">
+                <label for="tarjeta" class="form-label">Número de tarjeta</label>
+                <input type="text" class="form-control" id="tarjeta" name="tarjeta" maxlength="16" required>
+                <div class="form-text">Ingresa un número de 16 dígitos (no se valida).</div>
+            </div>
+            <button type="submit" class="btn btn-success">Añadir saldo</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

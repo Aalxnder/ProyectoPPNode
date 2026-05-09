@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Compra - Tienda Concurrencia{% endblock %}
+
+{% block content %}
+<div class="alert alert-info text-center">
+    <h2>{{ mensaje }}</h2>
+    {% if producto %}
+        <p>Producto: {{ producto.nombre }}</p>
+        <p>Precio: ${{ producto.precio }}</p>
+        <p>Stock restante: {{ producto.stock }}</p>
+    {% endif %}
+    <p>Saldo actual: ${{ usuario.saldo }}</p>
+</div>
+<a href="/" class="btn btn-secondary">Volver a la tienda</a>
+{% endblock %}

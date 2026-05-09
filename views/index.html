@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Tienda Concurrencia{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">Bienvenido a la Tienda</h1>
+<div class="row">
+    {% for producto in productos %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
+            <img src="/{{ producto.imagen }}"
+                 class="card-img-top img-fluid"
+                 alt="{{ producto.nombre }}"
+                 style="height:200px; object-fit:cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text">{{ producto.descripcion }}</p>
+                <p class="fw-bold">Precio: ${{ producto.precio }}</p>
+                <p>Stock: {{ producto.stock }}</p>
+                <a href="/buy/{{ producto.id }}" class="btn btn-primary">Comprar</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
