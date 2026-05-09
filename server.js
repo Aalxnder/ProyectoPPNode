@@ -19,6 +19,61 @@ let PRODUCTOS = [
     { id: 2, nombre: "Rines Chevrolet", precio: 4500, stock: 8,  descripcion: "Medida 295/50/r15", imagen: "chevy.jpeg" },
     { id: 3, nombre: "Rines Dodge",     precio: 6000, stock: 5,  descripcion: "Medida 275/40/r20", imagen: "dodge.jpeg" },
 ];
+const USE_LOCKS = true;
+
+class Mutex {
+    constructor() {
+        this.queue = [];
+        this.locked = false;
+    }
+    acquire() {
+        return new Promise(resolve => {
+            if (!this.locked) {
+                this.locked = true;
+                resolve();
+                return;
+            }
+            this.queue.push(resolve);
+        });
+    }
+    release() {
+        if (this.queue.length > 0) {
+            const next = this.queue.shift();
+            next();
+            return;
+        }
+        this.locked = false;
+    }
+}
+
+class Semaphore {
+    constructor(max) {
+        this.max = max;
+        this.count = 0;
+        this.queue = [];
+    }
+    acquire() {
+        return new Promise(resolve => {
+            if (this.count < this.max) {
+                this.count += 1;
+                resolve();
+                return;
+            }
+            this.queue.push(resolve);
+        });
+    }
+    release() {
+        if (this.queue.length > 0) {
+            const next = this.queue.shift();
+            next();
+            return;
+        }
+        this.count -= 1;
+    }
+}
+
+const compraMutex = new Mutex();
+const compraSemaphore = new Semaphore(1);
 
 // Rutas
 app.get('/', (req, res) => {
@@ -43,7 +98,43 @@ app.get('/buy/:id', async (req, res) => {
     // leer valores de usuario y producto
     const saldoLeido  = USUARIO.saldo;
     const stockLeido  = producto.stock;
+    if (USE_LOCKS) {
+        await compraSemaphore.acquire();
+        await compraMutex.acquire();
+        try {
 
+            await sleep(150);
+
+            if (USUARIO.saldo >= producto.precio && producto.stock > 0) {
+                await sleep(50);
+                USUARIO.saldo  -= producto.precio;
+                producto.stock -= 1;
+
+                res.render('buy.html', {
+                    mensaje: `[+] Compra realizada: ${producto.nombre} por $${producto.precio}`,
+                    producto,
+                    usuario: USUARIO
+                });
+                return;
+            }
+
+            res.render('buy.html', {
+                mensaje: `[!] Sin saldo suficiente o producto agotado`,
+                producto,
+                usuario: USUARIO
+            });
+            return;
+        } finally {
+            compraMutex.release();
+            compraSemaphore.release();
+        }
+    }
+
+
+    if (USE_LOCKS) {
+        await compraSemaphore.acquire();
+        await compraMutex.acquire();
+    }
     // meter un sleep para que al lanzar muchos hilos todas las peticiones vean lo mismo antes que se actualice y se rompa
     await sleep(150);       
   
@@ -59,12 +150,18 @@ app.get('/buy/:id', async (req, res) => {
             producto,
             usuario: USUARIO
         });
+        return;
     } else {
         res.render('buy.html', {
             mensaje: `[!] Sin saldo suficiente o producto agotado`,
             producto,
             usuario: USUARIO
         });
+        return;
+    }
+    if (USE_LOCKS) {
+        compraMutex.release();
+        compraSemaphore.release();
     }
 });
 
@@ -95,5 +192,5 @@ function sleep(ms) {
 
 app.listen(8000, () => {
     console.log('[+]Servidor corriendo en: http://127.0.0.1:8000');
-    console.log('[!] Deberia haber una race condition activa');
+    console.log((USE_LOCKS) ? '[+] Locks activados, no deberia haber race condition' : '[!] Locks desactivados, deberia haber race condition');
 });
