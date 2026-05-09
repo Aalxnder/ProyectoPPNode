@@ -52,8 +52,8 @@ node server.js
 Deberías ver:
  
 ```
-🚀 http://127.0.0.1:8000
-⚠️  Modo VULNERABLE — race condition activa
+[+] Servidor corriendo en: http://127.0.0.1:8000
+[!] Deberia haber una race condition activa
 ```
  
 Abre el navegador en [http://127.0.0.1:8000](http://127.0.0.1:8000) para ver la tienda.
