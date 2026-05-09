@@ -95,14 +95,14 @@ app.get('/buy/:id', async (req, res) => {
     if (!producto) {
         return res.status(404).send("Producto no encontrado");
     }
-    // leer valores de usuario y producto
-    const saldoLeido  = USUARIO.saldo;
-    const stockLeido  = producto.stock;
-
     if (USE_LOCKS) {
         await compraSemaphore.acquire();
         await compraMutex.acquire();
     }
+
+    // leer valores de usuario y producto
+    const saldoLeido  = USUARIO.saldo;
+    const stockLeido  = producto.stock;
     // meter un sleep para que al lanzar muchos hilos todas las peticiones vean lo mismo antes que se actualice y se rompa
     await sleep(150);       
   
