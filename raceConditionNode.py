@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import signal
 import sys
 import requests
@@ -20,6 +21,8 @@ BASE_URL = "http://127.0.0.1:8000"
 USAR_HILOS = True
 
 TOTAL_REQUESTS = 30
+DEFAULT_HILOS = 10
+HILOS_SIMULTANEOS = DEFAULT_HILOS
 
 compras_exitosas = 0
 compras_fallidas = 0
@@ -99,11 +102,11 @@ def imprimir_metricas(tiempo_total, modo):
     print("=" * 60)
 
 def simular_paralelo():
-    print(f"[*] Lanzando {TOTAL_REQUESTS} requests en paralelo (hilos simultáneos)...\n")
+    print(f"[*] Lanzando {TOTAL_REQUESTS} requests en paralelo ({HILOS_SIMULTANEOS} hilos simultáneos)...\n")
 
     inicio = time.time()
 
-    with ThreadPoolExecutor(max_workers=TOTAL_REQUESTS) as executor:
+    with ThreadPoolExecutor(max_workers=HILOS_SIMULTANEOS) as executor:
         futuros = [executor.submit(comprar, 1) for _ in range(TOTAL_REQUESTS)]
         for f in futuros:
             f.result()
@@ -147,4 +150,18 @@ def simular_race_condition():
     imprimir_metricas(tiempo_total, USAR_HILOS)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Simular race condition en compras")
+    parser.add_argument(
+        "--hilos",
+        type=int,
+        default=DEFAULT_HILOS,
+        help=f"Cantidad de hilos simultáneos (default: {DEFAULT_HILOS})",
+    )
+    args = parser.parse_args()
+    if args.hilos < 1:
+        print("[!] La cantidad de hilos debe ser >= 1\nUsando valor por defecto...")
+        HILOS_SIMULTANEOS = DEFAULT_HILOS
+    else:   
+        HILOS_SIMULTANEOS = args.hilos
+
     simular_race_condition()
