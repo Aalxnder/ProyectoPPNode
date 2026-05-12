@@ -19,7 +19,9 @@ let PRODUCTOS = [
     { id: 2, nombre: "Rines Chevrolet", precio: 4500, stock: 8,  descripcion: "Medida 295/50/r15", imagen: "chevy.jpeg" },
     { id: 3, nombre: "Rines Dodge",     precio: 6000, stock: 5,  descripcion: "Medida 275/40/r20", imagen: "dodge.jpeg" },
 ];
-const USE_LOCKS = false;
+const USE_LOCKS = process.argv[process.argv.length - 1]
+    ? parseInt(process.argv[process.argv.length - 1])
+    : false;
 
 class Mutex {
     constructor() {
