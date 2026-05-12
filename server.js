@@ -1,8 +1,9 @@
 const express = require('express');
 const nunjucks = require('nunjucks');
 const app = express();
+const path = require('path');
 
-nunjucks.configure('views', {
+nunjucks.configure(path.join(__dirname, 'views'), {
     autoescape: true,
     express: app
 });
