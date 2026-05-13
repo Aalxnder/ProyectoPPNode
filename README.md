@@ -116,3 +116,5 @@ USAR_HILOS = True
 ```
 
 ponle False y deberias estar usando el modo secuencial, aunque es probable que no se den las race condition de este modo
+
+En conclusión, este proyecto nos permitió entender cómo la concurrencia afecta sistemas reales y la importancia de proteger los recursos compartidos. Observamos que sin sincronización pueden ocurrir errores como stock o saldo negativo, mientras que con mutex y semáforos el sistema mantiene la consistencia y seguridad de la información. Además, comprobamos la relación entre rendimiento y confiabilidad en aplicaciones concurrentes.
